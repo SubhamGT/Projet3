@@ -68,7 +68,7 @@ h1{
 	font-family: 'Syne';
 	font-size: 22px;
 	font-weight: 800;
-	color: #B1663C
+	color: #B1663C;
 }
 
 h1 > span {
@@ -98,118 +98,57 @@ nav li {
 li:hover {
 	color: #B1663C;
 }
-#introduction {
-	display: flex;
-	align-items: center;
-}
-#introduction figure {
-	flex: 1
-}
-#introduction img {
-	display: block;
-	margin: auto;
-	width: 80%;
-}
 
-#introduction article {
-	flex: 1
-}
-#introduction h2 {
-	margin-bottom: 1em;
-}
 
-#introduction p {
-	margin-bottom: 0.5em;
-}
-#portfolio h2 {
-	text-align: center;
-	margin-bottom: 1em;
-}
-
-#btnGroup  {
-	display: flex;
-	justify-content: center;
-	text-decoration: none;
-	height: 40px;
-	font-size: 1.2em;
-	gap: 7px;
-margin-bottom: 30px;
-}
-#btnGroup button{
-	padding: 0 25px;
-	font-family: 'Syne';
-    font-weight: 700;
-	border: #1D6154 1px solid;
- 	color: #1D6154;
-  	 background-color: white;
-    text-align: center;
-    border-radius: 60px;
-	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
-	cursor: pointer;
-}
-
-#btnGroup button:hover{
-	color: white;
-	background-color: #1D6154;
-	transition: 0.5s;
-}
-.gallery {
-	width: 100%;
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
-	grid-column-gap: 20px;
-	grid-row-gap: 20px;
-}
-
-.gallery img {
-	width: 100%;
-
-}
-#contact {
+#LogIn {
 	width: 50%;
 margin: auto;
 }
-#contact > * {
+#LogIn > * {
 	text-align: center;
 }
-#contact h2{
+#LogIn h2{
 	margin-bottom: 20px;
 }
-#contact form {
+#LogIn form {
 	text-align: left;
 	margin-top:30px;
 	display: flex;
 	flex-direction: column;
 }
 
-#contact input {
+#LogIn input {
 	height: 50px;
 	font-size: 1.2em;
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
-#contact label {
+#LogIn label {
 	margin: 2em 0 1em 0;
 }
-#contact textarea {
+#LogIn textarea {
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
-
 input[type="submit"]{
 	font-family: 'Syne';
 	font-weight: 700;
 	color: white;
 	background-color: #1D6154;
 	margin : 2em auto ;
-	width: 180px;
+	width: 260px;
 	text-align: center;
 	border-radius: 60px ;
 }
-
-footer nav ul {
-	display: flex;
-	justify-content: flex-end;
-	margin: 2em
+#oublie {
+    text-align: center;
+}
+.text-success {
+	padding-top: 18px;
+    color: green;
 }
 
+.text-danger {
+	padding-top: 18px;
+    color: red;
+}

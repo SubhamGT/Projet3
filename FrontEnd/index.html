@@ -7,9 +7,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <meta name="description" content="">
     <link rel="stylesheet" href="./assets/style.css">
     <script src="index.js" defer></script>
+    <script src="login.js" defer></script>
 </head>
 <body>
 <header>
@@ -18,7 +20,7 @@
         <ul>
             <li>projets</li>
             <li>contact</li>
-            <li><a href="Login/index.html">login</a></li>
+            <li id="loginLink"><a href="Login/index.html"></a></li>
             <li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
         </ul>
     </nav>
@@ -36,13 +38,27 @@
         </article>
     </section>
     <section id="portfolio">
-        <h2>Mes Projets</h2>
-        <div id="btnGroup">
-            <button id="all">Tous</button>
-            <button id="objects">Objets</button>
-            <button id="apartments">Appartement</button>
-            <button id="hotels">Hôtels & Restaurants</button>
+        <div class="projettitre">
+            <h2>Mes Projets</h2>
+            <div id="Modifier">
+            <button id="openModalButton"><i class="fa-solid fa-pen-to-square"></i> Modifier</button>
+            <div id="modal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="close"><i class="fa-solid fa-x"></i></span>
+                        <h3>Galerie photo</h3>
+                    </div>
+                    <div class="galerieContainer">
+                        <!-- Les miniatures seront insérées ici par JavaScript -->
+                    </div>
+                    <div class="AddPhoto">
+                        <button>Ajouter une photo</button>
+                    </div>
+                </div>
+                </div>
+            </div>
         </div>
+        <div id="btnGroup"></div>
         <div class="gallery"></div>
     </section>
     <section id="contact">
@@ -51,8 +67,11 @@
         <form action="#" method="post">
             <label for="name">Nom</label>
             <input type="text" name="name" id="name">
+            
             <label for="email">Email</label>
             <input type="email" name="email" id="email">
+        
+            
             <label for="message">Message</label>
             <textarea name="message" id="message" cols="30" rows="10"></textarea>
             <input type="submit" value="Envoyer">

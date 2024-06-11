@@ -3,6 +3,7 @@
    License: none (public domain)
 */
 
+
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -46,55 +47,60 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-/** end reset css**/
+/** end reset css **/
 body {
 	max-width: 1140px;
-	margin:auto;
-	font-family: 'Work Sans' ;
+	margin: auto;
+	font-family: 'Work Sans';
 	font-size: 14px;
 }
 header {
 	display: flex;
 	justify-content: space-between;
-	margin: 50px 0
+	margin: 50px 0;
 }
 section {
-	margin: 50px 0
+	margin: 50px 0;
 }
-
-h1{
+h1 {
 	display: flex;
 	flex-direction: column;
 	font-family: 'Syne';
 	font-size: 22px;
 	font-weight: 800;
-	color: #B1663C
+	color: #B1663C;
 }
-
 h1 > span {
 	font-family: 'Work Sans';
-	font-size:10px;
+	font-size: 10px;
 	letter-spacing: 0.1em;
-;
 }
-
-h2{
+.projettitre {
+	display: flex;
+	justify-content: center;
+	align-items: baseline;
+	gap: 16px;
+}
+h2 {
 	font-family: 'Syne';
 	font-weight: 700;
 	font-size: 30px;
-	color: #1D6154
+	color: #1D6154;
+}
+.projettitre button {
+	border: none;
+	background-color: white;
+	cursor: pointer;
 }
 nav ul {
 	display: flex;
 	align-items: center;
 	list-style-type: none;
-
 }
 nav li {
 	padding: 0 10px;
 	font-size: 1.2em;
 }
-
 li:hover {
 	color: #B1663C;
 }
@@ -103,21 +109,19 @@ li:hover {
 	align-items: center;
 }
 #introduction figure {
-	flex: 1
+	flex: 1;
 }
 #introduction img {
 	display: block;
 	margin: auto;
 	width: 80%;
 }
-
 #introduction article {
-	flex: 1
+	flex: 1;
 }
 #introduction h2 {
 	margin-bottom: 1em;
 }
-
 #introduction p {
 	margin-bottom: 0.5em;
 }
@@ -125,30 +129,28 @@ li:hover {
 	text-align: center;
 	margin-bottom: 1em;
 }
-
-#btnGroup  {
+.button-container {
 	display: flex;
 	justify-content: center;
 	text-decoration: none;
 	height: 40px;
 	font-size: 1.2em;
 	gap: 7px;
-margin-bottom: 30px;
+    margin-bottom: 30px;
 }
-#btnGroup button{
+#btnGroup button {
 	padding: 0 25px;
 	font-family: 'Syne';
     font-weight: 700;
 	border: #1D6154 1px solid;
  	color: #1D6154;
-  	 background-color: white;
+  	background-color: white;
     text-align: center;
     border-radius: 60px;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 	cursor: pointer;
 }
-
-#btnGroup button:hover{
+#btnGroup button:hover {
 	color: white;
 	background-color: #1D6154;
 	transition: 0.5s;
@@ -160,28 +162,25 @@ margin-bottom: 30px;
 	grid-column-gap: 20px;
 	grid-row-gap: 20px;
 }
-
 .gallery img {
 	width: 100%;
-
 }
 #contact {
 	width: 50%;
-margin: auto;
+	margin: auto;
 }
 #contact > * {
 	text-align: center;
 }
-#contact h2{
+#contact h2 {
 	margin-bottom: 20px;
 }
 #contact form {
 	text-align: left;
-	margin-top:30px;
+	margin-top: 30px;
 	display: flex;
 	flex-direction: column;
 }
-
 #contact input {
 	height: 50px;
 	font-size: 1.2em;
@@ -195,21 +194,163 @@ margin: auto;
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
-
-input[type="submit"]{
+input[type="submit"] {
 	font-family: 'Syne';
 	font-weight: 700;
 	color: white;
 	background-color: #1D6154;
-	margin : 2em auto ;
+	margin: 2em auto;
 	width: 180px;
 	text-align: center;
-	border-radius: 60px ;
+	border-radius: 60px;
 }
-
 footer nav ul {
 	display: flex;
 	justify-content: flex-end;
-	margin: 2em
+	margin: 2em;
+}
+/* Style de la fenêtre modale */
+.modal {
+	display: none; /* Par défaut, la modale est cachée */
+	position: fixed; /* Position fixe pour rester au-dessus du contenu */
+	z-index: 1; /* Place la modale au-dessus du reste du contenu */
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto; /* Ajoute un défilement si nécessaire */
+	background-color: rgba(0,0,0,0.4); /* Fonde obscurci */
+}
+/* Contenu de la modale */
+.modal-content {
+	background-color: #fefefe;
+	margin: 15% auto; /* Centre horizontalement la modale */
+	padding: 20px;
+	border: 1px solid #888;
+	width: 40%; /* Largeur de la modale */
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09); /* Ombre */
+	position: relative;
+}
+/* Style de l'en-tête de la modale */
+.modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px 16px;
+	color: black;
+	font-size: 1.5rem;
+}
+/* Style du bouton de fermeture */
+.close {
+	position: absolute;
+	top: 10px;
+	right: 25px;
+	color: black;
+	font-size: 12px;
+	font-weight: bold;
+	cursor: pointer;
+}
+.close:hover,
+.close:focus {
+	color: #ccc;
+	text-decoration: none;
+	cursor: pointer;
+}
+/* Style du contenu de la modale */
+.modal-body {
+	padding: 20px;
+}
+/* Style des vues de la modale */
+.gallery-view,
+.add-photo-view {
+	display: none; /* Par défaut, les vues sont cachées */
+}
+/* Style pour afficher la vue active */
+.gallery-view.active,
+.add-photo-view.active {
+	display: block; /* Affiche la vue active */
+}
+#portfolio {
+	position: relative;
+}
+.AddPhoto {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-left: 4%;
+}
+.AddPhoto button {
+	font-weight: 600;
+	color: white;
+	background-color: #1D6154;
+	width: 180px;
+	height: 25px;
+	text-align: center;
+	border-radius: 60px;
+}
+/* Styles spécifiques pour les projets dans la galerie */
+.galerieContainer {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 20px;
+}
+.galerieContainer .projet {
+	position: relative;
+	margin: 10px;
+}
+.galerieContainer img {
+	width: 150px;
+	height: 150px;
+	object-fit: cover;
+}
+.delete {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	color: red;
+	cursor: pointer;
 }
 
+/* Style des miniatures dans la modale */
+.miniature {
+    position: relative;
+    display: inline-block;
+    margin: 10px;
+    text-align: center;
+
+}
+
+.miniature img {
+    width: 100px; /* Taille de l'image en miniature */
+    height: auto;
+    display: block;
+    margin-bottom: 5px;
+    position: relative; /* Pour positionner le bouton par rapport à l'image */
+
+}
+
+.delete-button-miniature {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-380%) translateX(40%);
+    padding: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.5em;
+
+}
+.miniature button{
+	background-color: black;
+}
+
+.delete-button i {
+    margin-right: 5px;
+	
+}
+
+.delete-button-miniature i {
+	color: white;
+
+}

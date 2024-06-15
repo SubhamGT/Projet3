@@ -54,6 +54,14 @@ body {
 	font-family: 'Work Sans';
 	font-size: 14px;
 }
+
+#editModeMessage{
+ text-align: center;
+  background-color: black;
+ padding: 10px;
+ color: white;
+}
+
 header {
 	display: flex;
 	justify-content: space-between;
@@ -240,6 +248,8 @@ footer nav ul {
 	color: black;
 	font-size: 1.5rem;
 }
+
+
 /* Style du bouton de fermeture */
 .close {
 	position: absolute;

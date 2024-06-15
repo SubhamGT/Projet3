@@ -76,10 +76,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         // Si l'utilisateur est connecté, affichez la section "Modifier"
         modifierSection.style.display = 'block';
-    } else {
-        // Si aucun token n'est présent, assurez-vous que le lien pointe vers la page de connexion
-        loginLink.textContent = 'login';
-        // Si l'utilisateur n'est pas connecté, masquez la section "Modifier"
-        modifierSection.style.display = 'none';
-    }
+    } 
 });

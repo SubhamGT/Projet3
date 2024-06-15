@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     let galerie = document.querySelector('.gallery');
     let galerieContainerModal = document.querySelector('.galerieContainer');
+    let editModeMessage = document.getElementById('editModeMessage');
 
     const buttons = [
         { id: 'all', text: 'Tous', category: 'all' },
@@ -83,7 +84,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     };
 
-    // Fonction pour afficher les images en miniature dans la modale
     let displayMiniatures = (projects) => {
         galerieContainerModal.innerHTML = '';
 
@@ -99,14 +99,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 let deleteButton = document.createElement('button');
                 deleteButton.className = 'delete-button-miniature';
-                deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteButton.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
                 deleteButton.addEventListener('click', function() {
-                    miniatureElement.remove(); // Supprime la miniature de la modale
-
-                    let imageToRemove = galerie.querySelector(`[data-id="${projet.id}"]`);
-                    if (imageToRemove) {
-                        imageToRemove.remove(); // Supprime l'image de la galerie principale
-                    }
+                    deleteProject(projet.id, miniatureElement);
                 });
 
                 miniatureElement.appendChild(image);
@@ -117,10 +112,28 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     };
 
-    // Fonction pour supprimer un projet
-    let deleteProject = (projectId) => {
-        // Ajoutez ici la logique pour supprimer le projet, par exemple un appel à une API de suppression
-        console.log(`Projet à supprimer: ${projectId}`);
+    let deleteProject = (projectId, miniatureElement) => {
+        const token = localStorage.getItem('token');
+        fetch(`http://localhost:5678/api/works/${projectId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            miniatureElement.remove();
+            let imageToRemove = document.querySelector(`.gallery [data-id="${projectId}"]`);
+            if (imageToRemove) {
+                imageToRemove.remove();
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
     };
 
     fetchProjects()
@@ -142,6 +155,8 @@ document.addEventListener("DOMContentLoaded", function() {
             localStorage.removeItem('token');
             window.location.href = 'Login/index.html';
         });
+
+        editModeMessage.style.display = 'block';
     } else {
         loginLink.textContent = 'Login';
         loginLink.href = 'Login/index.html';

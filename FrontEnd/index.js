@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let galerie = document.querySelector('.gallery');
     let galerieContainerModal = document.querySelector('.galerieContainer');
     let editModeMessage = document.getElementById('editModeMessage');
+    let modifierSection = document.getElementById('Modifier');
 
     const buttons = [
         { id: 'all', text: 'Tous', category: 'all' },
@@ -157,9 +158,14 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         editModeMessage.style.display = 'block';
+        modifierSection.style.display = 'block';
     } else {
         loginLink.textContent = 'Login';
         loginLink.href = 'Login/index.html';
+
+        // Hide edit mode message and modifier section
+        editModeMessage.style.display = 'none';
+        modifierSection.style.display = 'none';
     }
 
     const modal = document.getElementById('modal');

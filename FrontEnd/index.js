@@ -1,8 +1,29 @@
+
 document.addEventListener("DOMContentLoaded", function() {
-    let galerie = document.querySelector('.gallery');
-    let galerieContainerModal = document.querySelector('.galerieContainer');
-    let editModeMessage = document.getElementById('editModeMessage');
-    let modifierSection = document.getElementById('Modifier');
+    const tokens = localStorage.getItem('token');
+console.log('Token actuel :', tokens); // Vérifie le contenu du localStorage après récupération
+const loginLink = document.querySelector('#loginLink a');
+const modifierSection = document.getElementById('Modifier');
+
+if (tokens) {
+    // Si un token est présent, change le texte du lien en "Logout"
+    loginLink.textContent = 'logout';
+    // Ajoute un gestionnaire d'événements pour la déconnexion lorsque l'utilisateur clique sur "Logout"
+    loginLink.addEventListener('click', function(event) {
+        event.preventDefault();
+        // Supprime le token du localStorage
+        localStorage.removeItem('token');
+        console.log('Token après déconnexion :', localStorage.getItem('token')); // Vérifie le contenu du localStorage après déconnexion
+        // Redirige vers la page de connexion
+        window.location.href = 'Login/Login.html';
+    });
+    // Si l'utilisateur est connecté, affichez la section "Modifier"
+    modifierSection.style.display = 'block';
+} 
+    const galerie = document.querySelector('.gallery');
+    const galerieContainerModal = document.querySelector('.galerieContainer');
+    const editModeMessage = document.getElementById('editModeMessage');
+  
 
     const buttons = [
         { id: 'all', text: 'Tous', category: 'all' },
@@ -11,6 +32,9 @@ document.addEventListener("DOMContentLoaded", function() {
         { id: 'hotels', text: 'Hôtels & Restaurants', category: 3 }
     ];
 
+
+
+    
     function createFilterButtons(buttons) {
         const buttonContainer = document.createElement('div');
         buttonContainer.className = 'button-container';
@@ -147,23 +171,23 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error('There was a problem with the fetch operation:', error);
         });
 
-    const loginLink = document.querySelector('#loginLink a');
+   
     const token = localStorage.getItem('token');
     if (token) {
         loginLink.textContent = 'Logout';
         loginLink.addEventListener('click', function(event) {
             event.preventDefault();
             localStorage.removeItem('token');
-            window.location.href = 'Login/index.html';
+            window.location.href = 'Login/Login.html';
         });
 
         editModeMessage.style.display = 'block';
         modifierSection.style.display = 'block';
     } else {
         loginLink.textContent = 'Login';
-        loginLink.href = 'Login/index.html';
+        loginLink.href = 'Login/Login.html';
 
-        // Hide edit mode message and modifier section
+        // cacher les mode
         editModeMessage.style.display = 'none';
         modifierSection.style.display = 'none';
     }
@@ -187,5 +211,128 @@ document.addEventListener("DOMContentLoaded", function() {
         if (event.target === modal) {
             closeModal();
         }
+    });
+
+    // ------------------------------AjouterPhoto------------------------------------------------/
+
+    const addPhotoButton = document.getElementById('addPhotoButton');
+    const modalContent = document.querySelector('.modal-content');
+    const AjoutPhotos = fetch('http://localhost:5678/api/works');
+    addPhotoButton.addEventListener('click', function() {
+        const originalModalContent = modalContent.innerHTML;
+
+        modalContent.innerHTML = `
+            <div id="addPhotoCont">
+                <span class="close">
+                    <i class="fa-solid fa-x"></i>
+                </span>
+                <h3 id="addh3">Ajoute Photo</h3>
+                <div id="DragImg">
+                    <label for="input-file" id="drop-area">
+                        <input type="file" accept="image/*" id="input-file" hidden>
+                        <div id="img-view">
+                            <i class="fa-solid fa-image"></i><br>
+                            <button id="inputb">+ Ajouter photo</button>
+                            <p>jpg.png: 4mo max</p>
+                        </div>
+                    </label>
+                </div>
+                <div>
+                    <div id="SelecteurContainer">
+                        <h5>Titre</h5>
+                        <input type="text" id="titre" placeholder="Entrez un titre">
+                    </div>
+                    <div id="SelecteurContainer">
+                        <h5>Catégorie</h5>
+                        <select id="Categorie">
+                            <option value="" selected disabled>Choisir une catégorie</option>
+                            <option value="1">Objets</option>
+                            <option value="2">Appartements</option>
+                            <option value="3">Hôtel & Restaurants</option>
+                        </select>
+                    </div>
+                </div>
+                <input type="submit" id="valider" value="Valider">
+            </div>
+        `;
+
+        const backButton = document.createElement('button');
+        backButton.className = 'fa-solid fa-arrow-left back-button';
+        backButton.addEventListener('click', function() {
+            modalContent.innerHTML = originalModalContent; //faire un create element
+            
+            fetchProjects()
+                .then(data => {
+                    displayProjects(data);
+                    displayMiniatures(data);
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        });
+
+        modalContent.insertBefore(backButton, modalContent.firstChild);
+
+        // Ajout du gestionnaire d'événements pour fermer le modal lorsqu'on clique sur le span avec la classe close
+        modalContent.querySelector('.close').addEventListener('click', closeModal);
+
+        document.getElementById('input-file').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgView = document.getElementById('img-view');
+                    imgView.innerHTML = `<img src="${e.target.result}" alt="Image">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('inputb').addEventListener('click', function() {
+            document.getElementById('input-file').click();
+        });
+
+        document.getElementById('valider').addEventListener('click', function() {
+            const fileInput = document.getElementById('input-file');
+            const titleInput = document.getElementById('titre');
+            const categoryInput = document.getElementById('Categorie');
+            const file = fileInput.files[0];
+            const title = titleInput.value;
+            const category = categoryInput.value;
+
+            if (!file || !title || !category) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('title', title);
+            formData.append('category', category);
+
+            fetch('http://localhost:5678/api/works', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayProjects([data]);
+                displayMiniatures([data]);
+                closeModal();
+
+                document.getElementById('valider').classList.add('filled');
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        });
     });
 });

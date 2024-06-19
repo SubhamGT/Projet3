@@ -4,8 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordInput = form.password;
     const emailError = document.getElementById('emailError');
     const passwordError = document.getElementById('passwordError');
-    const loginLink = document.querySelector('#loginLink a');
-    const modifierSection = document.getElementById('Modifier');
+  
 
     console.log('Token avant récupération :', localStorage.getItem('token')); // Vérifie le contenu du localStorage avant récupération
 
@@ -38,12 +37,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Vérification si l'API a renvoyé un userId et un token
             if (data.userId && data.token) {
                 // Stockage du token dans le localStorage
-                localStorage.setItem('token', data.token);
+                localStorage.setItem('token', data.token); 
 
                 console.log('Token après connexion :', localStorage.getItem('token')); // Vérifie le contenu du localStorage après connexion
 
                 // Redirection vers la page principale
-                window.location.href = 'http://127.0.0.1:5500/FrontEnd/index.html';
+                window.location.href = './../index.html';
             } else {
                 // Affichage d'un message d'erreur
                 emailError.textContent = "Adresse email ou mot de passe incorrect.";
@@ -59,22 +58,5 @@ document.addEventListener('DOMContentLoaded', function() {
         
     });
 
-    const token = localStorage.getItem('token');
-    console.log('Token actuel :', token); // Vérifie le contenu du localStorage après récupération
-
-    if (token) {
-        // Si un token est présent, change le texte du lien en "Logout"
-        loginLink.textContent = 'logout';
-        // Ajoute un gestionnaire d'événements pour la déconnexion lorsque l'utilisateur clique sur "Logout"
-        loginLink.addEventListener('click', function(event) {
-            event.preventDefault();
-            // Supprime le token du localStorage
-            localStorage.removeItem('token');
-            console.log('Token après déconnexion :', localStorage.getItem('token')); // Vérifie le contenu du localStorage après déconnexion
-            // Redirige vers la page de connexion
-            window.location.href = 'Login/index.html';
-        });
-        // Si l'utilisateur est connecté, affichez la section "Modifier"
-        modifierSection.style.display = 'block';
-    } 
+   
 });

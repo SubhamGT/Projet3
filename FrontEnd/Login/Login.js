@@ -1,22 +1,24 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('#loginForm');
-    const emailInput = form.email;
-    const passwordInput = form.password;
+    const form = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
     const emailError = document.getElementById('emailError');
     const passwordError = document.getElementById('passwordError');
+
+    console.log('Token avant récupération :', localStorage.getItem('token'));
+
   
-
-    console.log('Token avant récupération :', localStorage.getItem('token')); // Vérifie le contenu du localStorage avant récupération
-
-    // Écouteur d'événement pour la soumission du formulaire
     form.addEventListener('submit', function(event) {
-        event.preventDefault();  // Empêche la soumission du formulaire et le changement de page
+        event.preventDefault(); 
 
-        // Récupération des données saisies par l'utilisateur
+     //Voir si le mail est le mm que sur l'api
         const email = emailInput.value;
         const password = passwordInput.value;
 
-        // Envoi de la requête POST à l'API pour se connecter
+       
+        emailError.textContent = '';
+        passwordError.textContent = '';
+
+     
         fetch("http://localhost:5678/api/users/login", {
             method: 'POST',
             headers: {
@@ -34,29 +36,26 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            // Vérification si l'API a renvoyé un userId et un token
+           
             if (data.userId && data.token) {
-                // Stockage du token dans le localStorage
+                // Stocker mon tocken,
                 localStorage.setItem('token', data.token); 
 
-                console.log('Token après connexion :', localStorage.getItem('token')); // Vérifie le contenu du localStorage après connexion
+                console.log('Token après connexion :', localStorage.getItem('token')); 
 
-                // Redirection vers la page principale
+                // si j'ai le tocken envoie moi sur la page principal stp
                 window.location.href = './../index.html';
             } else {
-                // Affichage d'un message d'erreur
-                emailError.textContent = "Adresse email ou mot de passe incorrect.";
-                passwordError.textContent = "Adresse email ou mot de passe incorrect.";
+           
+                emailError.textContent = "Mail ou mot de passe Incorect.";
+                passwordError.textContent = "Mail ou mot de passe Incorect.";
             }
         })
         .catch(error => {
-            // Gestion des erreurs de connexion
-            console.error('There was a problem with the fetch operation:', error);
-            emailError.textContent = "Adresse email ou mot de passe incorrect.";
-            passwordError.textContent = "Adresse email ou mot de passe incorrect.";
+           
+            console.error('Y a un probléme avec la co', error);
+            emailError.textContent = "Mail ou mot de passe Incorect.";
+            passwordError.textContent = "Mail ou mot de passe Incorect.";
         });
-        
     });
 
-   
-});

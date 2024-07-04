@@ -55,8 +55,14 @@ body {
 	font-size: 14px;
 }
 
-#editModeMessage{
+#CreativeMode{
  text-align: center;
+ position: fixed;
+ /* le index en bas sert a ce que mon creative mode passe devat tt le monde  */
+ z-index: 1; 
+ top: 0;
+ left: 0;
+ width: 100%;
   background-color: black;
  padding: 10px;
  color: white;
@@ -209,6 +215,7 @@ input[type="submit"] {
 	background-color: #1D6154;
 	margin: 2em auto;
 	width: 180px;
+	margin-bottom: 200px;
 	text-align: center;
 	border-radius: 60px;
 }
@@ -377,7 +384,7 @@ footer nav ul {
 #addPhotoCont{
 	display: flex;
 	flex-direction: column;
-	max-width: 100%;
+	
 	align-items: center;
 }
 #DragImg{
@@ -386,9 +393,8 @@ footer nav ul {
 	background-color:rgb(232, 241, 246);
 	margin: 5%;
 	width: 500px;
-	height: 190px;
-	max-height: 100%;
-	max-width: 100%;
+	height: 160px;
+
 }
 #addh3{
 	margin-top: 5%;
@@ -462,7 +468,7 @@ display: flex;
 cursor: pointer;
 }
 #valider.filled {
-    background-color: green; /* Couleur verte pour indiquer que le formulaire est prêt */
+    background-color: green;
 }
 
 #img-view img {
@@ -480,4 +486,16 @@ cursor: pointer;
 	padding: 15px; 
 	border:solid 2px rgba(245, 241, 241, 0.712);
 	box-shadow: 1px 4px 20px -9px rgba(0,0,0,0.8);
+}
+
+
+#valider.vertB{
+    background-color: rgb(29,97,84); 
+    color: white; 
+    border-color: rgb(29,97,84); 
+}
+
+/* sans ca ma modal apparait tt seul sur la page quand je rafréchi */
+#modal{
+	display: none;
 }

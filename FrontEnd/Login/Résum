@@ -1,0 +1,4 @@
+L'objectif etait de crée une interface web dinamique pour gérer les projet de sophie 
+Pour crée les modification on a du faire appel a different api (ajout, suppression et sauvgarder dans le serveur )
+on a filter les api grace a leur id et leur catégorie 
+local storage "Sauvgarder les donée localment et permet de voir les projet même déco"

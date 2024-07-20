@@ -1,32 +1,52 @@
+
+// -----------------------------------------------------------------Selecteur du dom (document object model)--------------------------------------------------
+
+//Récup du tocken dans le local storage 
 const token = localStorage.getItem('token');
+
+// Pointer les element de l'html
 const log = document.querySelector('#log a');
 const modifierSection = document.getElementById('Modifier');
 const galerie = document.querySelector('.gallery');
 const galerieModale = document.querySelector('.galerieContainer');
 const CreativeMode = document.getElementById('CreativeMode');
 
-// le tocken c'est pour la connexion je lui dit si j'appuie sur logout tu m'enléve le tocken du localStorage
 
+// ------------------------------------------------------------------------------Conexion------------------------------------------------------------------
+
+
+// si le tocken est la on est connecté
 if (token) {
-    log.textContent = 'Logout';
-    log.addEventListener('click', function(event) {
+    log.textContent = 'Logout'; //change le text de login en logout
+    log.addEventListener('click', function(event) { //event pour logout
         event.preventDefault();
-        localStorage.removeItem('token');
-        window.location.href = 'index.html';
+        localStorage.removeItem('token');   //suprime le tocken du localstorage
+        window.location.href = 'index.html'; //lien pour aller sur la page d'acceuil
     });
+
+//affiche créatives mode et modification
 
     CreativeMode.style.display = 'block';
     modifierSection.style.display = 'block';
+
     // sionon si j'appuie sur login tu me redirige sur la page de co 
+
 } else {
-    log.textContent = 'Login';
-    log.href = 'Login/Login.html';
+    log.textContent = 'Login'; //change le texte en login
+    log.href = 'Login/Login.html';//redirige sur la page login
+
+    //masque le créative mode et modification
 
     CreativeMode.style.display = 'none';
     modifierSection.style.display = 'none';
+    btnGroup.style.display = 'none';
 }
 
-//La c'est le button des filtre j'ai fait un tableau et je leur ai donner des categorie et des noms  pour les filtres 
+
+// --------------------------------------------------------------------------------------Tableau Filter ----------------------------------------------------------
+
+
+//Tableau [] des buttons de filtre et leur categori
 
 const buttons = [
     { id: 'all', text: 'Tous', category: 'all' },
@@ -35,53 +55,60 @@ const buttons = [
     { id: 'hotels', text: 'Hôtels & Restaurants', category: 3 }
 ];
 
-//J'ai injecter une div et les button directement en Js 
+//fonction pour créer les butons filter
 
 function createFilterButtons(buttons) {
-    const buttonContainer = document.createElement('div');
+    const buttonContainer = document.createElement('div'); //conteneur du button
     buttonContainer.className = 'button-container';
 
     buttons.forEach(button => {
-        const btn = document.createElement('button');
+        const btn = document.createElement('button'); //crée un button pouyr chaque entré
         btn.id = button.id;
         btn.textContent = button.text;
         btn.setAttribute('data-category', button.category);
-        buttonContainer.appendChild(btn);
+        buttonContainer.appendChild(btn); //ajoute le button au contenur
     });
 
-    document.getElementById('btnGroup').appendChild(buttonContainer);
+    document.getElementById('btnGroup').appendChild(buttonContainer); // Ajoute le conteneur de boutons au DOM
 
+
+    //event du filtre au click
     buttonContainer.addEventListener('click', (event) => {
-        if (event.target.tagName === 'BUTTON') {
+        if (event.target.tagName === 'BUTTON') {//Verifie que c'est bien un btn
             filterProjects(event.target.getAttribute('data-category'));
         }
     });
+
+
 }
+// --------------------------------------// récupére les projets depuis l'api--------------------------------------------------------------------------------------------------------------
 
-//Fetch qui veux dire vas chercher la je sui aller chercher l'api qui me permet de montrer les img de projets
-
-let fetchProjects = () => {
-    return fetch("http://localhost:5678/api/works")
+//api veux dire application progamming interface
+let fetchProjects = () => { //methode fetch veux dire vas chercher la l'api 
+    return fetch("http://localhost:5678/api/works") //Recup de l'api via (Swagger offre des outils permettant de générer la documentation pour son API Web)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error('erreur');
             }
-//si j'ai bien compris return reponse est une promesse qui dit d'aller chercher l'api et de stocker la réponse
-            return response.json();
+
+            return response.json();//Envoie moi la réponse en format JSOn
         });
 };
 
+
+// ---------------------------------------Fonction pour afficher les projets dans la galerie------------------------------------------------------------------------------------------
+
+
 let displayProjects = (projects) => {
-    //inerHtml me permet d'injecter du html 
     galerie.innerHTML = '';
-//la j'ai fait la methode forEach qui veux dire pour chaque et la c'est pour injecter de nouvelle photos avec un titre id projets div
+
     projects.forEach(projet => {
-        let projetElement = document.createElement('div');
+        let projetElement = document.createElement('div');//Conteneur pour projets
         projetElement.className = 'projet';
         projetElement.setAttribute('data-id', projet.id);
         projetElement.setAttribute('data-category', projet.category.id);
-//La j'ai crée la div qui me permet de stockeer les img 
-        if (projet.imageUrl) {
+
+        if (projet.imageUrl) { //si le projet a une img
             let imageContainer = document.createElement('div');
             imageContainer.className = 'image-container';
 
@@ -89,8 +116,8 @@ let displayProjects = (projects) => {
             image.src = projet.imageUrl;
             image.alt = projet.title;
 
-            imageContainer.appendChild(image);
-            projetElement.appendChild(imageContainer);
+            imageContainer.appendChild(image); //ajout d'image au conteur d'img
+            projetElement.appendChild(imageContainer);// Ajoute le conteneur d'image au projet
         }
 // avec leur titre et leur paragraphe 
         let titre = document.createElement('h3');
@@ -100,114 +127,128 @@ let displayProjects = (projects) => {
         let description = document.createElement('p');
         description.textContent = projet.description;
         projetElement.appendChild(description);
-        galerie.appendChild(projetElement);
+
+
+        galerie.appendChild(projetElement); 
     });
 };
-// La fonction foreach(pourchaque) ici pour le tableau des filtre sert a filtrer par rapport a leur category appartment objet hotel ou resto 
-//  les 2 baton en bas  ||  ca sert a combiner deux condition en une seul c'est la logique ou 
+
+
+//--------------------------------------------fontion pour filtrer les projets par catégorie  -----------------------------------------------------------------------------------------
+
+
 let filterProjects = (category) => {
-    let projects = document.querySelectorAll('.projet');
+    let projects = document.querySelectorAll('.projet'); // Sélectionne tout les projets
     projects.forEach(projet => {
-        //la c'est juste pour tous
-        if (category === 'all' || projet.getAttribute('data-category') == category) {
-            projet.style.display = 'block';
+        if (category === 'all' || projet.getAttribute('data-category') == category)  {
+            projet.style.display = 'block';//affiche les projets qui correspond a la categorie 
         } else {
-            projet.style.display = 'none';
+            projet.style.display = 'none';//masque les autres projets
         }
     });
 };
 
-//On a injecter dans la modal les img
+
+//---------------------------------------------------------------Fontion pour afficher les miniature des projets dans la modal-----------------------------------------------------
+
+
 let displayMiniatures = (projects) => {
     galerieModale.innerHTML = '';
 
     projects.forEach(projet => {
-        let miniatureElement = document.createElement('div');
-        miniatureElement.className = 'miniature';
-        miniatureElement.setAttribute('data-id', projet.id);
+        let miniatureElement = document.createElement('div'); //conteneur pour chaques miniature
+        miniatureElement.className = 'miniature'; // vax chercher les propriété css
+        miniatureElement.setAttribute('data-id', projet.id);//permet de stocker l'id de chaque miniature du projet
 
-        if (projet.imageUrl) {
+        if (projet.imageUrl) { //si le projet a une img 
             let image = document.createElement('img');
-            image.src = projet.imageUrl;
+            image.src = projet.imageUrl; //affiche l'img de la galerie 
             image.alt = projet.title;
-            let deleteButton = document.createElement('button');
+            let deleteButton = document.createElement('button');// crée le btn delete
             deleteButton.className = 'delete-button-miniature';
             deleteButton.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
             deleteButton.addEventListener('click', function(event) {
                 event.preventDefault(); 
-                deleteProject(projet.id, miniatureElement);
+                deleteProject(projet.id, miniatureElement); // appel a la fonction delete
             });
 
-            miniatureElement.appendChild(image);
-            miniatureElement.appendChild(deleteButton);
+            miniatureElement.appendChild(image);// Ajoute l'image à la miniature
+            miniatureElement.appendChild(deleteButton);// Ajoute le bouton de suppression à la miniature
         }
 
-        galerieModale.appendChild(miniatureElement);
+        galerieModale.appendChild(miniatureElement);// Ajoute la miniature à la galerie modale
     });
 };
 
-//On est aller sur swager pour prendre l'api qui permet de supprimer les element de la base de donée et on a utiliser la metode delete pour supprimer enfaite
+//--------------------------------------------------fonction qui permet de delete les projets ------------------------------------
 let deleteProject = (projectId, miniatureElement) => {
     const token = localStorage.getItem('token');
     fetch(`http://localhost:5678/api/works/${projectId}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json' //spécifie que le contenu de la requête est au format JSON
         }
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error('La réponse du réseau n\'était pas correcte');
         }
-        miniatureElement.remove();
+        miniatureElement.remove(); //supprimer la miniature du DOM
         let imageToRemove = document.querySelector(`.gallery [data-id="${projectId}"]`);
         if (imageToRemove) {
-            imageToRemove.remove();
+            imageToRemove.remove(); //Supprimer l'img de la galerie
         }
     })
     .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
+        console.error('y a un problem avec le fetch', error);
     });
 };
-
+//--------------------------------------------Récupre les projets depuis l'api et les affiche dans la galerie et la modale----------------------------------------------
 fetchProjects()
     .then(data => {
-        displayProjects(data);
-        createFilterButtons(buttons);
-        displayMiniatures(data);
+        displayProjects(data); // fonction prend les données récupérées data et les affiche dans la galerie elle pourrait parcourir les projets et créer des éléments DOM pour les afficher.
+        createFilterButtons(buttons); //fonction crée des boutons de filtre
+        displayMiniatures(data);//fonction prend également les données récupérées data et les affiche sous forme de miniatures dans une modale.
     })
     .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
+        console.error('il y a un probléme avec le fetch', error);
     });
 
-//Création de la modal
+//-----------------------------------------------------------------------------Création de la modal------------------------------------------------------------------------
+
+//Sélection des éléments HTML->
 
 const modal = document.getElementById('modal');
 const openModalButton = document.getElementById('openModalButton');
 const closeButton = document.querySelector('.close');
+
+//Définition des fonctions d'ouverture et de fermeture:
 const openModal = () => {
     modal.style.display = 'block';};
 const closeModal = () => {
     modal.style.display = 'none';};
-
- openModalButton.addEventListener('click', openModal);
-
+openModalButton.addEventListener('click', openModal);
 closeButton.addEventListener('click', closeModal);
 
-
-
+//Ajout de l'event pour fermet
 window.addEventListener('click', function(event) {
     if (event.target === modal) {
         closeModal();
     }
 });
 
+//Sélection des éléments HTML 
+
 const addPhotoButton = document.getElementById('addPhotoButton');
 const modalContent = document.querySelector('.modal-content');
 
+//Event pour le btn ajout de photo
+
 addPhotoButton.addEventListener('click', function() {
     const originalModalContent = modalContent.innerHTML;
+
+    //Création de l'interface d'ajout de photo
 
     const addPhotoCont = document.createElement('div');
     addPhotoCont.id = 'addPhotoCont';
@@ -271,6 +312,7 @@ addPhotoButton.addEventListener('click', function() {
 
     titleContainer.appendChild(titleLabel);
     titleContainer.appendChild(titleInput);
+//conteneur de titre et catégorie 
 
     const categoryContainer = document.createElement('div');
     categoryContainer.id = 'SelecteurContainer';
@@ -313,6 +355,8 @@ addPhotoButton.addEventListener('click', function() {
     validateButton.id = 'valider';
     validateButton.value = 'Valider';
 
+//ajout des enfant au parent addPhotoCont
+
     addPhotoCont.appendChild(closeSpan);
     addPhotoCont.appendChild(addh3);
     addPhotoCont.appendChild(dragImg);
@@ -320,13 +364,18 @@ addPhotoButton.addEventListener('click', function() {
     addPhotoCont.appendChild(categoryContainer);
     addPhotoCont.appendChild(validateButton);
 
+    //Ajout des element dans le dom
+
     modalContent.innerHTML = '';
     modalContent.appendChild(addPhotoCont);
+
+//---------------------------button de retour-------------------------
 
     const backButton = document.createElement('button');
     backButton.className = 'fa-solid fa-arrow-left back-button';
     backButton.addEventListener('click', function() {
         modalContent.innerHTML = originalModalContent;
+//appel au fetch pour afficher les projets et les miniature
         fetchProjects()
             .then(data => {
                 displayProjects(data);
@@ -334,9 +383,11 @@ addPhotoButton.addEventListener('click', function() {
                 attachEventListeners(); // Réattacher les événements après avoir réinitialisé le contenu
             })
             .catch(error => {
-                console.error('il y a un probleme je crois', error);
+                console.error('il y a un probleme sur le retour', error);
             });
     });
+
+//Ajout du btn de retour
     modalContent.insertBefore(backButton, modalContent.firstChild);
 
     // Ajout de la vérification de complétion du formulaire
@@ -345,14 +396,9 @@ addPhotoButton.addEventListener('click', function() {
     categorySelect.addEventListener('change', checkFormCompletion);
 
    
-
-    modalContent.insertBefore(backButton, modalContent.firstChild);
-
-    inputFile.addEventListener('change', checkFormCompletion);
-    titleInput.addEventListener('input', checkFormCompletion);
-    categorySelect.addEventListener('change', checkFormCompletion);
-
-    function checkFormCompletion() {
+   // Cette fonction vérifie si tous les champs du formulaire sont rempli
+   
+   function checkFormCompletion() {
         const file = inputFile.files[0];
         const title = titleInput.value;
         const category = categorySelect.value;
@@ -363,13 +409,14 @@ addPhotoButton.addEventListener('click', function() {
             validateButton.classList.remove('vertB');
         }
     }
-
+//---------------------------------------Event au click sur valider btn----------
     validateButton.addEventListener('click', function(event) {
         event.preventDefault();
         const file = inputFile.files[0];
         const title = titleInput.value;
         const category = categorySelect.value;
 
+ //condition vérifié sur les champ sont vide ou nn 
     if (!title || !category || !file) {
         alert("Veuillez remplir tous les champs et sélectionner une image.");
         return;
@@ -511,7 +558,9 @@ addPhotoButton.addEventListener('click', function() {
     
                 modalContent.innerHTML = '';
                 modalContent.appendChild(addPhotoCont);
-    
+
+    //button de retour 
+
                 const backButton = document.createElement('button');
                 backButton.className = 'fa-solid fa-arrow-left back-button';
                 backButton.addEventListener('click', function() {
@@ -523,14 +572,17 @@ addPhotoButton.addEventListener('click', function() {
                             attachEventListeners(); // Réattacher les événements après avoir réinitialisé le contenu
                         })
                         .catch(error => {
-                            console.error('il y a un probleme je crois', error);
+                            console.error('pas reussi a charger la modal', error);
                         });
                 });
     
                 modalContent.insertBefore(backButton, modalContent.firstChild);
     
+                //Validation et soumission des donee du formulaire
+
                 inputFile.addEventListener('change', function(event) {
                     const file = event.target.files[0];
+                    //Vérifie que le fichier est bien défini
                     if (file && file.type.startsWith('image/')) {
                         const reader = new FileReader();
                         reader.onload = function(e) {
@@ -562,11 +614,12 @@ addPhotoButton.addEventListener('click', function() {
                 
                     const token = localStorage.getItem('token');
                     fetch("http://localhost:5678/api/works", {
-                        method: 'POST',
+                        method: 'POST',//c'est pour envoyé les données au serveur
                         headers: {
-                            'Authorization': `Bearer ${token}`
+                            'Authorization': `Bearer ${token}`//ca permet au serveur de vérifier que la requette provient d'un utilisateur autorisé
                         },
-                        body: formData
+                        //la requête contient les données a envoyer ici un objet FormData qui inclut le titre, la catégorie, et l'image du nouveau projet
+                        body: formData 
                     })
                     .then(response => {
                         if (!response.ok) {
@@ -574,6 +627,7 @@ addPhotoButton.addEventListener('click', function() {
                         }
                         return response.json();
                     })
+                    //ajoute les projets ajouter dans la modal en mini et sur la page 
                     .then(newProject => {
                         fetchProjects()
                             .then(data => {
@@ -598,13 +652,19 @@ addPhotoButton.addEventListener('click', function() {
     attachEventListeners();
     
 
-    
+    //btn retour
     modalContent.insertBefore(backButton, modalContent.firstChild);
     
+    //---------------------------------------------------------------------------gestion du fichier d'image sélectionné dans ajouter photos-------------------------------------------------
     inputFile.addEventListener('change', function(event) {
         const file = event.target.files[0];
+
+        //si tt les fichier sont bien définie 
         if (file && file.type.startsWith('image/')) {
+    
+            //reader pour lire le contenu du ficher     
             const reader = new FileReader();
+            //onload veux dire lorceque ma page est charger tu m'affiche l'img dans ajout photos
             reader.onload = function(e) {
                 imgView.innerHTML = '';
                 const img = document.createElement('img');
@@ -632,41 +692,14 @@ addPhotoButton.addEventListener('click', function() {
                 // Logique pour aceder a ajout de photo
             });
         }
-    
-        // Réattacher les événements des boutons de suppression des images
-        const deleteButtons = document.querySelectorAll('.delete-button');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const image = button.closest('.image');
-                if (image) {
-                    const imageId = image.getAttribute('data-id');
-                    fetch(`/api/delete-image/${imageId}`, {
-                        method: 'DELETE',
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            image.remove();
-                        } else {
-                            console.error('Erreur lors de la suppression de l\'image');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur API:', error);
-                    });
-                }
-            });
-        });
     }
     
     attachEventHandlers();
     
-
-
-    
     addButton.addEventListener('click', function() {
         inputFile.click();
     });
-
+//on a remis toute la logique de la fonction de validatebtn c'est quand on change de page 
     validateButton.addEventListener('click', function(event) {
         event.preventDefault(); 
         const file = inputFile.files[0];
@@ -674,8 +707,8 @@ addPhotoButton.addEventListener('click', function() {
         const category = categorySelect.value;
 
         if (file && title && category) {
-            console.log('aa');
             validateButton.classList.add('vertB');
+           
         }
      
     
@@ -694,7 +727,7 @@ addPhotoButton.addEventListener('click', function() {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Jai pas ton api');
+                throw new Error('le form est pas valid');
             }
             return response.json();
         })
@@ -708,29 +741,33 @@ addPhotoButton.addEventListener('click', function() {
         });
        
     });
-    
-
+   
 });
 
+//----------------------------------------------Cette fonction permet d'ajouter un projet à une galerie d'images sur la page web-----------------------------------------------
 function addProjectToGallery(project) {
-    console.log(project);
+ 
     let projetElement = document.createElement('div');
     projetElement.className = 'projet';
-    projetElement.setAttribute('data-id', project.id);
-    projetElement.setAttribute('data-category', project.categoryId);
+    projetElement.setAttribute('data-id', project.id);// Assigne un attribut de données avec l'ID du projet
+    projetElement.setAttribute('data-category', project.categoryId); // Assigne un attribut de données avec l'ID de la catégorie
+
+    // si projet a une URL d'image
 
     if (project.imageUrl) {
         let imageContainer = document.createElement('div');
         imageContainer.className = 'image-container';
-
+// Création de l'image
         let image = document.createElement('img');
         image.src = project.imageUrl;
         image.alt = project.title;
 
+  // Ajoute l'image au conteneur d'image, puis ajoute ce conteneur à l'élément du projet
+
         imageContainer.appendChild(image);
         projetElement.appendChild(imageContainer);
     }
-
+//creation du titre et du p 
     let titre = document.createElement('h3');
     titre.textContent = project.title;
     projetElement.appendChild(titre);
@@ -740,6 +777,8 @@ function addProjectToGallery(project) {
     projetElement.appendChild(description);
     galerie.appendChild(projetElement);
 }
+
+// Cette fonction ajoute un projet à une galerie de miniatures 
 
 function addProjectToMiniatures(project) {
     let miniatureElement = document.createElement('div');

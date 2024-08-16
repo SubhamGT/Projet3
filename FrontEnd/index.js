@@ -28,7 +28,7 @@ if (token) {
 
     CreativeMode.style.display = 'block';
     modifierSection.style.display = 'block';
-
+    btnGroup.style.display = 'none';
     // sionon si j'appuie sur login tu me redirige sur la page de co 
 
 } else {
@@ -39,7 +39,7 @@ if (token) {
 
     CreativeMode.style.display = 'none';
     modifierSection.style.display = 'none';
-    btnGroup.style.display = 'none';
+    btnGroup.style.display = 'block'
 }
 
 
@@ -47,7 +47,7 @@ if (token) {
 
 
 //Tableau [] des buttons de filtre et leur categori
-
+//appel api !!!!!!!!!!!!!!
 const buttons = [
     { id: 'all', text: 'Tous', category: 'all' },
     { id: 'objects', text: 'Objets', category: 1 },
@@ -65,7 +65,7 @@ function createFilterButtons(buttons) {
         const btn = document.createElement('button'); //crée un button pouyr chaque entré
         btn.id = button.id;
         btn.textContent = button.text;
-        btn.setAttribute('data-category', button.category);
+        btn.setAttribute('data-category', button.category); //Permet de donée l'attribue de buttoncategorie a data-caterory
         buttonContainer.appendChild(btn); //ajoute le button au contenur
     });
 
@@ -87,7 +87,7 @@ function createFilterButtons(buttons) {
 let fetchProjects = () => { //methode fetch veux dire vas chercher la l'api 
     return fetch("http://localhost:5678/api/works") //Recup de l'api via (Swagger offre des outils permettant de générer la documentation pour son API Web)
         .then(response => {
-            if (!response.ok) {
+            if (!response.ok) { //si la rep est diférent de ok tu m'affiche erreur
                 throw new Error('erreur');
             }
 
@@ -105,7 +105,7 @@ let displayProjects = (projects) => {
     projects.forEach(projet => {
         let projetElement = document.createElement('div');//Conteneur pour projets
         projetElement.className = 'projet';
-        projetElement.setAttribute('data-id', projet.id);
+        projetElement.setAttribute('data-id', projet.id);//permet de stocker l'id de chaque miniature du projet
         projetElement.setAttribute('data-category', projet.category.id);
 
         if (projet.imageUrl) { //si le projet a une img
@@ -129,7 +129,7 @@ let displayProjects = (projects) => {
         projetElement.appendChild(description);
 
 
-        galerie.appendChild(projetElement); 
+        galerie.appendChild(projetElement); //donner l'element galerie au parent projectelement
     });
 };
 
@@ -287,7 +287,7 @@ addPhotoButton.addEventListener('click', function() {
     addButton.textContent = '+ Ajouter photo';
 
     const fileInfo = document.createElement('p');
-    fileInfo.textContent = 'jpg.png: 4mo max';
+    fileInfo.textContent = 'jpg.png: 4mo max'; //!!!!!!!!
 
     imgView.appendChild(imageIcon);
     imgView.appendChild(document.createElement('br'));
@@ -329,7 +329,7 @@ addPhotoButton.addEventListener('click', function() {
     defaultOption.textContent = 'Choisir une catégorie';
     defaultOption.disabled = true;
     defaultOption.selected = true;
-
+//appel api 
     const option1 = document.createElement('option');
     option1.value = '1';
     option1.textContent = 'Objets';
@@ -341,7 +341,7 @@ addPhotoButton.addEventListener('click', function() {
     const option3 = document.createElement('option');
     option3.value = '3';
     option3.textContent = 'Hôtel & Restaurants';
-
+//
     categorySelect.appendChild(defaultOption);
     categorySelect.appendChild(option1);
     categorySelect.appendChild(option2);
@@ -419,7 +419,7 @@ addPhotoButton.addEventListener('click', function() {
  //condition vérifié sur les champ sont vide ou nn 
     if (!title || !category || !file) {
         alert("Veuillez remplir tous les champs et sélectionner une image.");
-        return;
+        return;//a tester
     }
    })
 
@@ -523,7 +523,7 @@ addPhotoButton.addEventListener('click', function() {
                 defaultOption.textContent = 'Choisir une catégorie';
                 defaultOption.disabled = true;
                 defaultOption.selected = true;
-    
+    //appel api
                 const option1 = document.createElement('option');
                 option1.value = '1';
                 option1.textContent = 'Objets';
@@ -606,7 +606,7 @@ addPhotoButton.addEventListener('click', function() {
                         alert("Veuillez remplir tous les champs et sélectionner une image.");
                         return;
                     }
-                
+                //Donée du formulaire
                     const formData = new FormData();
                     formData.append('title', title);
                     formData.append('category', category);

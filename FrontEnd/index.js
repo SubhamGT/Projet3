@@ -1,114 +1,115 @@
-
-// -----------------------------------------------------------------Selecteur du dom (document object model)--------------------------------------------------
-
-//Récup du tocken dans le local storage 
+// Récup du token dans le local storage 
 const token = localStorage.getItem('token');
 
-// Pointer les element de l'html
+// Pointer les éléments de l'HTML
 const log = document.querySelector('#log a');
 const modifierSection = document.getElementById('Modifier');
 const galerie = document.querySelector('.gallery');
 const galerieModale = document.querySelector('.galerieContainer');
 const CreativeMode = document.getElementById('CreativeMode');
 
+// ------------------------------------------------------------------------------Connexion------------------------------------------------------------------
 
-// ------------------------------------------------------------------------------Conexion------------------------------------------------------------------
-
-
-// si le tocken est la on est connecté
+// Si le token est présent, on est connecté
 if (token) {
-    log.textContent = 'Logout'; //change le text de login en logout
-    log.addEventListener('click', function(event) { //event pour logout
+    log.textContent = 'Logout'; // Change le texte de login en logout
+    log.addEventListener('click', function(event) { // Event pour logout
         event.preventDefault();
-        localStorage.removeItem('token');   //suprime le tocken du localstorage
-        window.location.href = 'index.html'; //lien pour aller sur la page d'acceuil
+        localStorage.removeItem('token');   // Supprime le token du localStorage
+        window.location.href = 'index.html'; // Redirige vers la page d'accueil
     });
 
-//affiche créatives mode et modification
-
+    // Affiche le mode créatif et les sections de modification
     CreativeMode.style.display = 'block';
     modifierSection.style.display = 'block';
     btnGroup.style.display = 'none';
-    // sionon si j'appuie sur login tu me redirige sur la page de co 
-
 } else {
-    log.textContent = 'Login'; //change le texte en login
-    log.href = 'Login/Login.html';//redirige sur la page login
+    log.textContent = 'Login'; // Change le texte en login
+    log.href = 'Login/Login.html'; // Redirige vers la page login
 
-    //masque le créative mode et modification
-
+    // Masque le mode créatif et les sections de modification
     CreativeMode.style.display = 'none';
     modifierSection.style.display = 'none';
-    btnGroup.style.display = 'block'
+    btnGroup.style.display = 'block';
 }
-
 
 // --------------------------------------------------------------------------------------Tableau Filter ----------------------------------------------------------
 
+fetch("http://localhost:5678/api/categories", {
+    method: 'GET', // Méthode GET pour récupérer les catégories
+    headers: {
+        'Authorization': `Bearer ${token}` // Ajout du token dans les headers
+    }
+})
+.then(response => {
+    if (!response.ok) { // Si la réponse n'est pas OK
+        throw new Error('Erreur lors de la récupération des catégories');
+    }
+    return response.json(); // Transforme la réponse en JSON
+})
+.then(categories => {
+    // Appel de la fonction pour créer les boutons de filtre
+    createFilterButtons(categories);
+})
+.catch(error => {
+    console.error('Erreur :', error);
+});
 
-//Tableau [] des buttons de filtre et leur categori
-//appel api !!!!!!!!!!!!!!
-const buttons = [
-    { id: 'all', text: 'Tous', category: 'all' },
-    { id: 'objects', text: 'Objets', category: 1 },
-    { id: 'apartments', text: 'Appartements', category: 2 },
-    { id: 'hotels', text: 'Hôtels & Restaurants', category: 3 }
-];
-
-//fonction pour créer les butons filter
-
-function createFilterButtons(buttons) {
-    const buttonContainer = document.createElement('div'); //conteneur du button
+function createFilterButtons(categories) {
+    const buttonContainer = document.createElement('div'); // Conteneur des boutons
     buttonContainer.className = 'button-container';
 
-    buttons.forEach(button => {
-        const btn = document.createElement('button'); //crée un button pouyr chaque entré
-        btn.id = button.id;
-        btn.textContent = button.text;
-        btn.setAttribute('data-category', button.category); //Permet de donée l'attribue de buttoncategorie a data-caterory
-        buttonContainer.appendChild(btn); //ajoute le button au contenur
+    // Créer le bouton "Tous"
+    const allBtn = document.createElement('button');
+    allBtn.id = 'all';
+    allBtn.textContent = 'Tous';
+    allBtn.setAttribute('data-category', 'all'); // Attribut data-category pour "Tous"
+    buttonContainer.appendChild(allBtn); // Ajouter le bouton "Tous" au conteneur
+
+    // Créer les autres boutons à partir des catégories de l'API
+    categories.forEach(category => {
+        const btn = document.createElement('button'); // Crée un bouton pour chaque catégorie
+        btn.id = category.id;
+        btn.textContent = category.name; // Suppose que `name` est le nom de la catégorie
+        btn.setAttribute('data-category', category.id); // Attribut data-category avec l'ID de la catégorie
+        buttonContainer.appendChild(btn); // Ajouter le bouton au conteneur
     });
 
     document.getElementById('btnGroup').appendChild(buttonContainer); // Ajoute le conteneur de boutons au DOM
 
-
-    //event du filtre au click
+    // Event du filtre au click
     buttonContainer.addEventListener('click', (event) => {
-        if (event.target.tagName === 'BUTTON') {//Verifie que c'est bien un btn
+        if (event.target.tagName === 'BUTTON') { // Vérifie que c'est bien un bouton
             filterProjects(event.target.getAttribute('data-category'));
         }
     });
-
-
 }
-// --------------------------------------// récupére les projets depuis l'api--------------------------------------------------------------------------------------------------------------
 
-//api veux dire application progamming interface
-let fetchProjects = () => { //methode fetch veux dire vas chercher la l'api 
-    return fetch("http://localhost:5678/api/works") //Recup de l'api via (Swagger offre des outils permettant de générer la documentation pour son API Web)
+
+// --------------------------------------Récupération des projets depuis l'API--------------------------------------------------------------------------------------------------------------
+
+let fetchProjects = () => {
+    return fetch("http://localhost:5678/api/works") // Récupération de l'API
         .then(response => {
-            if (!response.ok) { //si la rep est diférent de ok tu m'affiche erreur
-                throw new Error('erreur');
+            if (!response.ok) { // Si la réponse est différente de OK
+                throw new Error('Erreur lors de la récupération des projets');
             }
-
-            return response.json();//Envoie moi la réponse en format JSOn
+            return response.json(); // Transforme la réponse en JSON
         });
 };
 
-
-// ---------------------------------------Fonction pour afficher les projets dans la galerie------------------------------------------------------------------------------------------
-
+// ---------------------------------------Affichage des projets dans la galerie------------------------------------------------------------------------------------------
 
 let displayProjects = (projects) => {
     galerie.innerHTML = '';
 
     projects.forEach(projet => {
-        let projetElement = document.createElement('div');//Conteneur pour projets
+        let projetElement = document.createElement('div'); // Conteneur pour les projets
         projetElement.className = 'projet';
-        projetElement.setAttribute('data-id', projet.id);//permet de stocker l'id de chaque miniature du projet
+        projetElement.setAttribute('data-id', projet.id); // Stocke l'ID de chaque projet
         projetElement.setAttribute('data-category', projet.category.id);
 
-        if (projet.imageUrl) { //si le projet a une img
+        if (projet.imageUrl) { // Si le projet a une image
             let imageContainer = document.createElement('div');
             imageContainer.className = 'image-container';
 
@@ -116,10 +117,10 @@ let displayProjects = (projects) => {
             image.src = projet.imageUrl;
             image.alt = projet.title;
 
-            imageContainer.appendChild(image); //ajout d'image au conteur d'img
-            projetElement.appendChild(imageContainer);// Ajoute le conteneur d'image au projet
+            imageContainer.appendChild(image); // Ajoute l'image au conteneur d'images
+            projetElement.appendChild(imageContainer); // Ajoute le conteneur d'images au projet
         }
-// avec leur titre et leur paragraphe 
+
         let titre = document.createElement('h3');
         titre.textContent = projet.title;
         projetElement.appendChild(titre);
@@ -128,91 +129,87 @@ let displayProjects = (projects) => {
         description.textContent = projet.description;
         projetElement.appendChild(description);
 
-
-        galerie.appendChild(projetElement); //donner l'element galerie au parent projectelement
+        galerie.appendChild(projetElement); // Ajoute le projet à la galerie
     });
 };
 
-
-//--------------------------------------------fontion pour filtrer les projets par catégorie  -----------------------------------------------------------------------------------------
-
+//--------------------------------------------Filtrer les projets par catégorie  -----------------------------------------------------------------------------------------
 
 let filterProjects = (category) => {
-    let projects = document.querySelectorAll('.projet'); // Sélectionne tout les projets
+    let projects = document.querySelectorAll('.projet'); // Sélectionne tous les projets
     projects.forEach(projet => {
         if (category === 'all' || projet.getAttribute('data-category') == category)  {
-            projet.style.display = 'block';//affiche les projets qui correspond a la categorie 
+            projet.style.display = 'block'; // Affiche les projets qui correspondent à la catégorie
         } else {
-            projet.style.display = 'none';//masque les autres projets
+            projet.style.display = 'none'; // Masque les autres projets
         }
     });
 };
 
-
-//---------------------------------------------------------------Fontion pour afficher les miniature des projets dans la modal-----------------------------------------------------
-
+//---------------------------------------------------------------Affichage des miniatures des projets dans la modale-----------------------------------------------------
 
 let displayMiniatures = (projects) => {
     galerieModale.innerHTML = '';
 
     projects.forEach(projet => {
-        let miniatureElement = document.createElement('div'); //conteneur pour chaques miniature
-        miniatureElement.className = 'miniature'; // vax chercher les propriété css
-        miniatureElement.setAttribute('data-id', projet.id);//permet de stocker l'id de chaque miniature du projet
+        let miniatureElement = document.createElement('div'); // Conteneur pour chaque miniature
+        miniatureElement.className = 'miniature'; // Va chercher les propriétés CSS
+        miniatureElement.setAttribute('data-id', projet.id); // Stocke l'ID de chaque miniature
 
-        if (projet.imageUrl) { //si le projet a une img 
+        if (projet.imageUrl) { // Si le projet a une image
             let image = document.createElement('img');
-            image.src = projet.imageUrl; //affiche l'img de la galerie 
+            image.src = projet.imageUrl; // Affiche l'image de la galerie
             image.alt = projet.title;
-            let deleteButton = document.createElement('button');// crée le btn delete
+            let deleteButton = document.createElement('button'); // Crée le bouton delete
             deleteButton.className = 'delete-button-miniature';
             deleteButton.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
             deleteButton.addEventListener('click', function(event) {
                 event.preventDefault(); 
-                deleteProject(projet.id, miniatureElement); // appel a la fonction delete
+                deleteProject(projet.id, miniatureElement); // Appel à la fonction delete
             });
 
-            miniatureElement.appendChild(image);// Ajoute l'image à la miniature
-            miniatureElement.appendChild(deleteButton);// Ajoute le bouton de suppression à la miniature
+            miniatureElement.appendChild(image); // Ajoute l'image à la miniature
+            miniatureElement.appendChild(deleteButton); // Ajoute le bouton de suppression à la miniature
         }
 
-        galerieModale.appendChild(miniatureElement);// Ajoute la miniature à la galerie modale
+        galerieModale.appendChild(miniatureElement); // Ajoute la miniature à la galerie modale
     });
 };
 
-//--------------------------------------------------fonction qui permet de delete les projets ------------------------------------
+//--------------------------------------------------Suppression des projets ------------------------------------
+
 let deleteProject = (projectId, miniatureElement) => {
     const token = localStorage.getItem('token');
     fetch(`http://localhost:5678/api/works/${projectId}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json' //spécifie que le contenu de la requête est au format JSON
+            'Content-Type': 'application/json' // Spécifie que le contenu de la requête est au format JSON
         }
     })
     .then(response => {
         if (!response.ok) {
             throw new Error('La réponse du réseau n\'était pas correcte');
         }
-        miniatureElement.remove(); //supprimer la miniature du DOM
+        miniatureElement.remove(); // Supprimer la miniature du DOM
         let imageToRemove = document.querySelector(`.gallery [data-id="${projectId}"]`);
         if (imageToRemove) {
-            imageToRemove.remove(); //Supprimer l'img de la galerie
+            imageToRemove.remove(); // Supprimer l'image de la galerie
         }
     })
     .catch(error => {
-        console.error('y a un problem avec le fetch', error);
+        console.error('Problème avec le fetch', error);
     });
 };
-//--------------------------------------------Récupre les projets depuis l'api et les affiche dans la galerie et la modale----------------------------------------------
+
+//--------------------------------------------Récupérer les projets et les afficher----------------------------------------------
 fetchProjects()
     .then(data => {
-        displayProjects(data); // fonction prend les données récupérées data et les affiche dans la galerie elle pourrait parcourir les projets et créer des éléments DOM pour les afficher.
-        createFilterButtons(buttons); //fonction crée des boutons de filtre
-        displayMiniatures(data);//fonction prend également les données récupérées data et les affiche sous forme de miniatures dans une modale.
+        displayProjects(data); // Affiche les projets dans la galerie
+        displayMiniatures(data); // Affiche les miniatures dans la modale
     })
     .catch(error => {
-        console.error('il y a un probléme avec le fetch', error);
+        console.error('Problème avec le fetch', error);
     });
 
 //-----------------------------------------------------------------------------Création de la modal------------------------------------------------------------------------
